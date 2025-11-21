@@ -36,9 +36,8 @@ jobs:
           # Force TLS 1.2
           [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-          Write-Host "Username: $env:username"
-          Write-Host "Migration API: $env:migration_import_api"
           Write-Host "CMA File: $env:cmafile"
+          Write-Host "Migration API: $env:migration_import_api"
 
           # Encode Basic Auth
           $pair = "$env:username`:$env:password"
@@ -58,16 +57,16 @@ jobs:
 
           $uri = "$env:migration_import_api/"
 
-          # Invoke REST method (skip cert check for self-signed certs)
+          # Invoke REST API, skip cert check for self-signed certificates
           $response = Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body $body -SkipCertificateCheck
 
           $mdsId = $response.mdsId
           Write-Output "Imported CMA mdsId: $mdsId"
 
-          # Save response as artifact
+          # Save response
           $response | ConvertTo-Json | Out-File import_response.json
 
-      - name: Upload Import Response
+      - name: Upload import response
         uses: actions/upload-artifact@v4
         with:
           name: cma-import-response
