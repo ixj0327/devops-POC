@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - "*.cma"
+      - "devops-POC/EXT-0010.CodeConfig.cma"
 
 jobs:
   deploy-cma:
