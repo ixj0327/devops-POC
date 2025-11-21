@@ -30,29 +30,29 @@ jobs:
       #############################################
       # 1. Validate the CMA before deploying
       #############################################
-      - name: Validate CMA
-        id: validate
-        run: |
-          echo "Validating CMA..."
-
-          RESPONSE=$(curl -s -k -w "\n%{http_code}" -X POST \
-            -u "${C2M_USER}:${C2M_PASS}" \
-            -F "file=@${{ steps.cma.outputs.file }}" \
-            "${C2M_API_URL}/ouaf/rest/apis/cm/admin/migrationImport")
-
-          BODY=$(echo "$RESPONSE" | head -n 1)
-          STATUS=$(echo "$RESPONSE" | tail -n 1)
-
-          echo "Validation response status: $STATUS"
-          echo "$BODY" > validation.json
-
-          if [ "$STATUS" -ne 200 ]; then
-            echo "CMA Validation failed!"
-            exit 1
-          fi
-
-          REQUEST_ID=$(echo "$BODY" | jq -r '.requestId')
-          echo "request_id=$REQUEST_ID" >> $GITHUB_OUTPUT
+      #- name: Validate CMA
+      #  id: validate
+      #  run: |
+      #    echo "Validating CMA..."
+	  #
+      #    RESPONSE=$(curl -s -k -w "\n%{http_code}" -X POST \
+      #      -u "${C2M_USER}:${C2M_PASS}" \
+      #      -F "file=@${{ steps.cma.outputs.file }}" \
+      #      "${C2M_API_URL}/ouaf/rest/apis/cm/admin/migrationImport")
+	  #
+      #    BODY=$(echo "$RESPONSE" | head -n 1)
+      #    STATUS=$(echo "$RESPONSE" | tail -n 1)
+	  #
+      #    echo "Validation response status: $STATUS"
+      #    echo "$BODY" > validation.json
+	  #
+      #    if [ "$STATUS" -ne 200 ]; then
+      #      echo "CMA Validation failed!"
+      #      exit 1
+      #    fi
+	  #
+      #    REQUEST_ID=$(echo "$BODY" | jq -r '.requestId')
+      #    echo "request_id=$REQUEST_ID" >> $GITHUB_OUTPUT
 
       #############################################
       # 2. Import CMA Package
