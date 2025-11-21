@@ -26,35 +26,10 @@ jobs:
           username: ${{ secrets.C2M_USER }}
           password: ${{ secrets.C2M_PASS }}
           migration_import_api: ${{ secrets.C2M_API_URL }}
-          cmafile: ${{ steps.cma.outputs.cmafile }}
         run: |
-          pwsh -Command "
-            # Debug info
-            Write-Host 'Username:' $env:username
-            Write-Host 'API URL:' $env:migration_import_api
-            Write-Host 'CMA file:' $env:cmafile
+          pwsh ./run-migration.ps1 `
+            -Username "$env:username" `
+            -Password "$env:password" `
+            -MigrationApi "$env:migration_import_api" `
+            -CmaFile "${{ steps.cma.outputs.cmafile }}"
 
-            # Combine username and password for Basic Auth
-            $pair = ""$($env:username):$($env:password)""
-            $bytes = [System.Text.Encoding]::ASCII.GetBytes($pair)
-            $encodedCreds = [Convert]::ToBase64String($bytes)
-            $authHeader = ""Basic $encodedCreds""
-
-            # Headers
-            $headers = @{
-                'accept' = 'application/json'
-                'Authorization' = $authHeader
-                'Content-Type' = 'application/json'
-            }
-
-            # Body
-            $body = @{ fileName = $env:cmafile } | ConvertTo-Json
-
-            # API URI
-            $uri = ""$env:migration_import_api/""
-
-            # Invoke API
-            $response = Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body $body -SkipCertificateCheck
-
-            Write-Output 'MDS ID:' $response.mdsId
-          "
